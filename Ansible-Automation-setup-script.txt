@@ -21,15 +21,15 @@ run(f"sudo -u {new_user} ssh-keygen -t ecdsa -b 521 -N '' -f /home/{new_user}/.s
 run(f"ls /home/{new_user}/.ssh")
 
 with open(f"/home/{new_user}/.ssh/id_ecdsa.pub") as f:
-    print(f"This is your public key, save it:\n{f.read()}")
+    print(f"This is your public key, save it and if forget go to "/.ssh/id_ecdsa.pub" file:\n{f.read()}")
 
 input("Press Enter to continue...")
 
 # Get user inputs for dynamic inventory
-inventory_group = input("Enter inventory group name: ")
-node_name = input("Enter node name: ")
-host_ip = input("Enter node IP address: ")
-ssh_user = input("Enter SSH user: ")
+inventory_group = input("Enter inventory group name(anyanme you want): ")
+node_name = input("Enter node name(anyname you want): ")
+host_ip = input("Enter target node private IP address: ")
+ssh_user = input("Enter target machine ssh username: ")
 
 # Create inventory file entry
 inventory_entry = f"[{inventory_group}]\n{node_name} ansible_ssh_host={host_ip} ansible_ssh_user={ssh_user}\n"
