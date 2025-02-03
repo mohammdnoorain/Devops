@@ -1,0 +1,47 @@
+import subprocess
+
+def run(cmd):
+    subprocess.run(cmd, shell=True, check=True)
+
+# Take new username from user
+new_user = input("Enter the new username: ")
+
+# Update system
+run("sudo apt update -y")
+
+# Create user with provided username
+run(f"sudo useradd -m -s /bin/bash {new_user}")
+
+# Set password for the new user
+password = input(f"Enter new password for {new_user}: ")
+confirm_password = input("Confirm password: ")
+if password == confirm_password:
+    subprocess.run(f'echo "{new_user}:{password}" | sudo chpasswd', shell=True, check=True)
+else:
+    print("Passwords do not match. Please run the script again.")
+    exit(1)
+
+# Enable Password Authentication in SSH config
+run("sudo sed -i 's/^#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config")
+run("sudo service ssh reload")
+
+# Grant sudo access without password
+run(f"echo '{new_user} ALL=(ALL) NOPASSWD: ALL' | sudo tee -a /etc/sudoers")
+
+# Switch to the new user
+run(f"su - {new_user} -c 'ls -a'")
+
+# Create .ssh directory for the new user
+run(f"sudo mkdir -p /home/{new_user}/.ssh")
+run(f"sudo chmod 700 /home/{new_user}/.ssh")
+
+# Edit authorized_keys file
+ssh_key = input("Paste the id_ecdsa.pub key from devopsadmin: ")
+with open(f"/home/{new_user}/.ssh/authorized_keys", "w") as f:
+    f.write(ssh_key + "\n")
+
+# Set permissions
+run(f"sudo chmod 600 /home/{new_user}/.ssh/*")
+
+# Set ownership of the .ssh folder and authorized_keys file
+run(f"sudo chown -R {new_user}:{new_user} /home/{new_user}/.ssh")
