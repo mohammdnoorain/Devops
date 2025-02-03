@@ -1,0 +1,39 @@
+import subprocess
+
+def run(cmd):
+    subprocess.run(cmd, shell=True, check=True)
+
+# Get the new username from the user
+new_user = input("Enter the new username to be created in your machine: ")
+
+# Install Ansible
+run("sudo apt update -y && sudo apt install -y software-properties-common")
+run("sudo add-apt-repository --yes --update ppa:ansible/ansible")
+run("sudo apt update -y && sudo apt install -y ansible")
+run("ansible --version")
+
+# Create user and set permissions
+run(f"sudo useradd -m -s /bin/bash {new_user}")
+run(f"sudo chown -R {new_user}:{new_user} /etc/ansible/")
+
+# Generate SSH key
+run(f"sudo -u {new_user} ssh-keygen -t ecdsa -b 521 -N '' -f /home/{new_user}/.ssh/id_ecdsa")
+run(f"ls /home/{new_user}/.ssh")
+
+with open(f"/home/{new_user}/.ssh/id_ecdsa.pub") as f:
+    print(f"This is your public key, save it:\n{f.read()}")
+
+input("Press Enter to continue...")
+
+# Get user inputs for dynamic inventory
+inventory_group = input("Enter inventory group name: ")
+node_name = input("Enter node name: ")
+host_ip = input("Enter node IP address: ")
+ssh_user = input("Enter SSH user: ")
+
+# Create inventory file entry
+inventory_entry = f"[{inventory_group}]\n{node_name} ansible_ssh_host={host_ip} ansible_ssh_user={ssh_user}\n"
+with open("/etc/ansible/hosts", "w") as f:
+    f.write(inventory_entry)
+
+print("Inventory file '/etc/ansible/hosts' updated with the provided details.")
