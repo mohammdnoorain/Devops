@@ -4,7 +4,7 @@ def run(cmd):
     subprocess.run(cmd, shell=True, check=True)
 
 # Take new username from user
-new_user = input("Enter the new username: ")
+new_user = input("Enter the new username to be created in this machine: ")
 
 # Update system
 run("sudo apt update -y")
@@ -36,7 +36,7 @@ run(f"sudo mkdir -p /home/{new_user}/.ssh")
 run(f"sudo chmod 700 /home/{new_user}/.ssh")
 
 # Edit authorized_keys file
-ssh_key = input("Paste the id_ecdsa.pub key from devopsadmin: ")
+ssh_key = input("Paste the id_ecdsa.pub key from Ansible Master user machine: ")
 with open(f"/home/{new_user}/.ssh/authorized_keys", "w") as f:
     f.write(ssh_key + "\n")
 
