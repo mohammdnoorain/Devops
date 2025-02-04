@@ -1,0 +1,10 @@
+LICENSE
+README.md
+setup.py
+ansible_controller/__init__.py
+ansible_controller/controller.py
+ansible_master_setup.egg-info/PKG-INFO
+ansible_master_setup.egg-info/SOURCES.txt
+ansible_master_setup.egg-info/dependency_links.txt
+ansible_master_setup.egg-info/entry_points.txt
+ansible_master_setup.egg-info/top_level.txt
